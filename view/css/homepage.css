@@ -1,0 +1,33 @@
+body {
+    font-family: "Lato", sans-serif;
+    padding-top: 56px;
+}
+.navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+    background-color: #333;
+}
+.display-2{
+    color: #f2f2f2;
+}
+.lead{
+    color: #f2f2f2;
+}
+.jumbotron {
+    height: 400px;
+    background-image: url("../img/geazy.jpg");
+    background-size: cover;
+}
+.card-img-top{
+   width: 150px;
+    margin-left: 55px;
+    margin-top: 20px;
+}
+.btn-black{
+    background-color: #000000!important;
+    color: #fff;
+}
+footer{
+    background-color: #f2f2f2;
+    padding: 25px;
+}
