@@ -2,9 +2,9 @@
  
 include_once '../model/databaseConnection.php';
  
-$username = "proiect";                  // Use your username
-$password = "proiect";             // and your password
-$database = "localhost/XE";   // and the connect string to connect to your database
+$username = "C##PROIECT";                  // Use your username
+$password = "PROIECT";             // and your password
+$database = "localhost:1522/XE";   // and the connect string to connect to your database
  
 
 ?>
