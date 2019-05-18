@@ -20,7 +20,7 @@ DROP SEQUENCE proxys_g;
 CREATE TABLE useri (
   useri_Id INT NOT NULL,
   username VARCHAR2(30) NOT NULL,
-  pass VARCHAR2(30) NOT NULL,
+  pass RAW(100) NOT NULL,
   eAdmin INT DEFAULT 0,
   eBanat INT DEFAULT 0,
   created_at DATE,
@@ -114,7 +114,8 @@ DECLARE
   v_prenume1 VARCHAR2(255);
   v_prenume2 VARCHAR2(255);
   v_username VARCHAR2(255);
-  v_password VARCHAR2(255);
+  v_password varchar2(255);
+  v_encrypt raw(100);
   v_admin INT;
   v_ban INT;
   v_length INT;
@@ -141,7 +142,7 @@ DECLARE
 DBMS_OUTPUT.PUT_LINE('am terminat de construit tabelele');
 
 DBMS_OUTPUT.PUT_LINE('populam tabela useri cu 1.000.000 entitati ...');
-   FOR v_i IN 1..1000000 LOOP
+   FOR v_i IN 1..100 LOOP
       v_nume := lista_nume(TRUNC(DBMS_RANDOM.VALUE(0,lista_nume.count))+1);
       IF (DBMS_RANDOM.VALUE(0,100)<50) THEN      
          v_prenume1 := lista_prenume_fete(TRUNC(DBMS_RANDOM.VALUE(0,lista_prenume_fete.count))+1);
@@ -175,6 +176,7 @@ DBMS_OUTPUT.PUT_LINE('populam tabela useri cu 1.000.000 entitati ...');
         v_password := v_password || dbms_random.string(
             case when dbms_random.value(0, 1) < 0.5 then 'l' else 'x' end, 1);
         end loop;
+        select USER_REGISTRATION.CRYPTING_PASS(v_password) into v_encrypt from dual;
        
       if(DBMS_RANDOM.VALUE(0,100)<0.1) THEN
        v_admin:= 1;
@@ -189,7 +191,7 @@ DBMS_OUTPUT.PUT_LINE('populam tabela useri cu 1.000.000 entitati ...');
        end if;
        v_username:=substr(v_username,1,29);
        
-      insert into useri values(usr_seq.nextval, v_username, v_password, v_admin, v_ban, sysdate, sysdate);
+      insert into useri values(usr_seq.nextval, v_username, v_encrypt, v_admin, v_ban, sysdate, sysdate);
    END LOOP;
    
    
@@ -200,7 +202,7 @@ DBMS_OUTPUT.PUT_LINE('am terminat de populat useri!');
 DBMS_OUTPUT.PUT_LINE('populam tabela artists cu 10.000 entitati...');
    
    --inseram 1000 de artisti 
-   FOR v_i IN 1..1000 LOOP
+   FOR v_i IN 1..20 LOOP
       v_nume := lista_nume(TRUNC(DBMS_RANDOM.VALUE(0,lista_nume.count))+1);
       IF (DBMS_RANDOM.VALUE(0,100)<50) THEN      
          v_prenume1 := lista_prenume_fete(TRUNC(DBMS_RANDOM.VALUE(0,lista_prenume_fete.count))+1);
@@ -253,7 +255,7 @@ DBMS_OUTPUT.PUT_LINE('populam tabela genuri...');
    select count(*) into v_tmp2 from artists;
    select count(*) into v_tmp5 from genres;
    
-    FOR v_i IN 1..100000 LOOP
+    FOR v_i IN 1..2000 LOOP
       v_length := FLOOR(DBMS_RANDOM.VALUE(1,3));
       my_str :=null;
       FOR v_ii IN 1..v_length LOOP
@@ -319,7 +321,7 @@ DBMS_OUTPUT.PUT_LINE('populam tabela genuri...');
    
 DBMS_OUTPUT.PUT_LINE('am terminat de populat songs!');
 select count(*) into v_tmp from songs;
-FOR v_i in 1..2000 loop
+FOR v_i in 1..4000 loop
       v_length := FLOOR(DBMS_RANDOM.VALUE(10,20));
             my_str :=null;
             FOR v_ii IN 1..v_length LOOP
@@ -333,6 +335,7 @@ FOR v_i in 1..2000 loop
             insert into comments values (v_id, v_descriere,v_userfk, sysdate,sysdate);
             v_userfk:= FLOOR(DBMS_RANDOM.VALUE(1,v_tmp+1));
             insert into proxysongcomment values(v_userfk,v_id,sysdate,sysdate);
-            
+
 end loop;
 end;
+
