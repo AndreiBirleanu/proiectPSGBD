@@ -1,7 +1,6 @@
 <?php
  
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
+include_once '../model/databaseConnection.php';
  
 $username = "proiect";                  // Use your username
 $password = "proiect";             // and your password
