@@ -59,11 +59,13 @@ end login;
     sql_stmt varchar2(255);
     begin
     select count(*) into match_count from useri where username like c_username;
-    if( match_count >1 ) then
+    if( match_count >0 ) then
       c_mesaj :='Username deja existent';
+      return;
     end if;
     if( length(c_password) not between 5 and 20 ) then
      c_mesaj:='Parola pea mica sau prea mare';
+     return;
     end if;
     select CRYPTO.CRYPTING_PASS(c_password) into c_raw from dual;
     insert into useri values( usr_seq.nextval,c_username,c_raw,c_admin,0,sysdate,sysdate);
@@ -77,12 +79,11 @@ select crypto.CRYPTING_PASS('viata e frumoasa') from dual;
 desc useri;
 select * from useri;
 
-select USER_REGISTRATION.REGISTER_USER('ADMINISTRATOR', 'ADMINISTRATOR', 1) from dual;
 DECLARE
 v_mesaj varchar2(255);
 BEGIN 
-USER_REGISTRATION.REGISTER_USER('ADMINISTRATOR', 'ADMINISTRATOR', 1, v_mesaj); 
+USER_REGISTRATION.REGISTER_USER('ADMINISTRATOR231', 'ADMINISTRATOR', 1, v_mesaj); 
 dbms_output.put_line(v_mesaj);
 END;
 
-select USER_REGISTRATION.LOGIN('ADMINISTRATOR','ADMINSTRATOR') from dual;
+select USER_REGISTRATION.LOGIN('ADMINISTRATOR','ADMINISTRATOR') from dual;

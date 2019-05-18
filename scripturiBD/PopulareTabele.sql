@@ -176,7 +176,7 @@ DBMS_OUTPUT.PUT_LINE('populam tabela useri cu 1.000.000 entitati ...');
         v_password := v_password || dbms_random.string(
             case when dbms_random.value(0, 1) < 0.5 then 'l' else 'x' end, 1);
         end loop;
-        select USER_REGISTRATION.CRYPTING_PASS(v_password) into v_encrypt from dual;
+        select crypto.CRYPTING_PASS(v_password) into v_encrypt from dual;
        
       if(DBMS_RANDOM.VALUE(0,100)<0.1) THEN
        v_admin:= 1;
@@ -339,3 +339,5 @@ FOR v_i in 1..4000 loop
 end loop;
 end;
 
+SELECT * FROM useri;
+commit;
