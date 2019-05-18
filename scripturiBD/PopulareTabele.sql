@@ -339,5 +339,6 @@ FOR v_i in 1..4000 loop
 end loop;
 end;
 
-SELECT * FROM useri;
+SELECT * FROM useri order by useri_id desc;
 commit;
+

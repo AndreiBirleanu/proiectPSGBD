@@ -87,3 +87,18 @@ dbms_output.put_line(v_mesaj);
 END;
 
 select USER_REGISTRATION.LOGIN('ADMINISTRATOR231','ADMINISTRATOR') from dual;
+
+select USER_REGISTRATION.LOGIN('ADMINISTRATOR231','ADMINISTRATOR') as response from dual
+
+
+COMMIT;
+
+SELECT  * FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk order by voturi desc;
+
+
+select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk group by g.nume order by sum(voturi) desc;
+
+SELECT s.nume,s.descriere,s.voturi FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where g.nume like '146407' order by voturi desc;
+
+select count(*) from genres;
+SELECT count(*) FROM genres WHERE REGEXP_LIKE(nume, '[^A-Za-z]');

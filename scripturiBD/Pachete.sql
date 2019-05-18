@@ -6,3 +6,8 @@ END user_registration;
 CREATE OR REPLACE PACKAGE crypto AS
 FUNCTION crypting_pass(c_pass useri.username%TYPE) RETURN RAW;
 END crypto;
+
+CREATE OR REPLACE PACKAGE top as
+PROCEDURE top_this_week;
+--PROCEDURE top_last_week;
+END top;
