@@ -3,9 +3,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
  
-$username = "proiect";                  // Use your username
-$password = "proiect";             // and your password
-$database = "localhost/XE";   // and the connect string to connect to your database
+$username = "C##PROIECT";                  // Use your username
+$password = "PROIECT";             // and your password
+$database = "localhost:1522/XE";   // and the connect string to connect to your database
  
 
 ?>
