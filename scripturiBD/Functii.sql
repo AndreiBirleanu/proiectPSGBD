@@ -74,31 +74,65 @@ end register_user;
 END user_registration; 
 
 
+CREATE OR REPLACE PACKAGE BODY vote AS 
+    FUNCTION vote_song(v_piesa varchar2, v_user varchar2) return number
+    IS
+    v_canVote number;
+    v_sql varchar2(255);
+    begin
+    select ebanat into v_canVote from useri where username like v_user;
+  if v_canVote = 0 then
+    return 0;
+  end if;
+  v_sql:='UPDATE songs SET voturi=voturi+1 where nume like "' || v_piesa || '"';
+  execute IMMEDIATE v_sql;
+end vote_song;
 
-select crypto.CRYPTING_PASS('viata e frumoasa') from dual;
-desc useri;
-select * from useri;
+FUNCTION BAN(v_user varchar2) return number
+is
+v_sql varchar2(255);
+v_canVote number;
+begin
 
-DECLARE
-v_mesaj varchar2(255);
-BEGIN 
-USER_REGISTRATION.REGISTER_USER('ADMINISTRATOR231', 'ADMINISTRATOR', 1, v_mesaj); 
-dbms_output.put_line(v_mesaj);
-END;
-
-select USER_REGISTRATION.LOGIN('ADMINISTRATOR231','ADMINISTRATOR') from dual;
-
-select USER_REGISTRATION.LOGIN('ADMINISTRATOR231','ADMINISTRATOR') as response from dual
-
-
-COMMIT;
-
-SELECT  * FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk order by voturi desc;
+select ebanat into v_canVote from useri where username like v_user;
+  if v_canVote = 1 then
+    return 0;
+  end if;
+  
+   v_sql:='UPDATE useri SET ebanat=1 where nume like "' || v_user || '"';
+  execute IMMEDIATE v_sql;
+  return 1;
 
 
-select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk group by g.nume order by sum(voturi) desc;
+end ban;
+  
+END vote; 
 
-SELECT s.nume,s.descriere,s.voturi FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where g.nume like '146407' order by voturi desc;
 
-select count(*) from genres;
-SELECT count(*) FROM genres WHERE REGEXP_LIKE(nume, '[^A-Za-z]');
+
+CREATE OR REPLACE PACKAGE BODY addSong AS
+    FUNCTION addArtist(v_nume IN varchar2, v_artist IN varchar2)return NUMBER
+    is
+    idSong NUMBER;
+    v_sql VARCHAR2(255);
+    idArtist NUMBER;
+    v_count number;
+    BEGIN
+        select count(*) into v_count from artists where nume_scena like v_nume;
+        if(v_count >0) then
+          Select songs_id into idSong from Songs where nume like v_nume;
+        SELECT artists_id INTO idArtist from artists  where nume_scena like v_artist;
+        v_sql:='INSERT INTO PROXYSONGARTIST(artists_fk, songs_fk, created_at, updated_at) VALUES (' || idartist || ', ' || idsong ||', sysdate, sysdate)';
+        EXECUTE IMMEDIATE v_sql;  
+        else    
+        INSERT INTO ARTISTS values(ART_SEQ.nextval,v_artist,sysdate,sysdate);
+        Select songs.songs_id into idSong from Songs where nume like v_nume;
+        SELECT artists_id INTO idArtist from artists  where nume_scena like v_artist;
+        v_sql:='INSERT INTO PROXYSONGARTIST(artists_fk, songs_fk, created_at, updated_at) VALUES (' || idartist || ', ' || idsong ||', sysdate, sysdate)';
+        EXECUTE IMMEDIATE v_sql;  
+       
+        end if;
+        return 1;
+        
+    end addArtist;    
+    END addSong;

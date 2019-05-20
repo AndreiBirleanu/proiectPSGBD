@@ -81,10 +81,11 @@ body {font-family: "Lato", sans-serif;}
                             </li>
                             <li class="nav-item active">
                                 <a class="nav-link" href="#">Tops</a>
-                                <span class="sr-only">(current)</span>
+                                
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#">Genres</a>
+                                <span class="sr-only">(current)</span>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#">Artists</a>
@@ -96,14 +97,14 @@ body {font-family: "Lato", sans-serif;}
                     </div>
                 </div>
             </nav>
-<h2>Topuri pentru Genuri</h2>
+<h2>Topuri pentru Genuri  TOP 9</h2>
 <p>Selectati unul din genurile de mai jos</p>
 
 <div class="tab">
 
   <?php
-    $query = "select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where REGEXP_LIKE(g.nume, '[^A-Za-z]')  group by g.nume order by sum(voturi) desc ";
- 
+    //$query = "select * from(select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where REGEXP_LIKE(g.nume, '[^A-Za-z]')  group by g.nume order by sum(voturi) desc ) where rownum <10";
+    $query = "select * from top_genre_view";
    
     $s = oci_parse($c, $query);
     if (!$s) {
@@ -121,9 +122,9 @@ body {font-family: "Lato", sans-serif;}
         $control=$control+1;
         foreach ($row as $item) {
             if($control==1)
-            echo '<button class = "tablinks" onclick="openGenre(event, \''. htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE).'\')" id="defaultOpen">' . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .'</button>';
+            echo '<button class = "tablinks" onclick="openGenre(event, \''. htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE).'\')" id="defaultOpen"><span>'. $control . '  </span>' . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .'</button>';
             else
-            echo '<button class = "tablinks" onclick="openGenre(event, \''. htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE).'\')" >' . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .'</button>';
+            echo '<button class = "tablinks" onclick="openGenre(event, \''. htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE).'\')" ><span>'. $control . '  </span>'. htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .'</button>';
             
         }
         
@@ -137,8 +138,9 @@ body {font-family: "Lato", sans-serif;}
   <button class="tablinks" onclick="openCity(event, 'Tokyo')">Dance</button> -->
 </div>
 <?php 
-$query = "select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk  where REGEXP_LIKE(g.nume, '[^A-Za-z]') group by g.nume order by sum(voturi) desc ";
-  
+//$query = "select * from(select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where REGEXP_LIKE(g.nume, '[^A-Za-z]')  group by g.nume order by sum(voturi) desc ) where rownum <10";
+$query = "select * from top_genre_view";
+   
    
 $s = oci_parse($c, $query);
 if (!$s) {
@@ -160,7 +162,7 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
        echo "<script> console.log('" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) . "');</script>";
         
        echo "<div id ='" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) . "' class = 'tabcontent'>\n";
-       $query2 = "SELECT s.nume,s.descriere,s.voturi FROM  genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where g.nume like '" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .  "' order by voturi desc ";
+       $query2 = "SELECT s.nume,s.descriere,s.link_youtube,s.voturi FROM  genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where g.nume like '" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .  "' order by voturi desc ";
         
        $x = oci_parse($c, $query2);
        if (!$x) {
@@ -188,10 +190,22 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
                 $y=$y+1;
                 echo "<tr>\n";
                 echo "<th scope='row'>" . $y . "</th>";
+                $count=0;
                 foreach ($row1 as $item1) {
+                    $count =$count+1;
+                    if($count==3){
+                        echo "<td><a href='";
+                    echo $item1!==null?htmlspecialchars($item1, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
+                    echo "'>";
+                    echo $item1!==null?htmlspecialchars($item1, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
+                    echo "</a>";
+                    //echo "<a href='https://www.google.com/'>x</a>";
+                    echo "</td>\n";
+                    }else{
                     echo "<td>";
                     echo $item1!==null?htmlspecialchars($item1, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
                     echo "</td>\n";
+                }
                 }
                 echo    "<td><button class='btn btn-black'>Upvote</button></td>";
 
@@ -208,7 +222,7 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
    
 }
 
-while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
+while (($row = oci_fetch_array($x, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
     
     
     foreach ($row as $item) {
@@ -229,7 +243,7 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
                 $m = oci_error($s);
                 trigger_error('Could not execute statement: '. $m['message'], E_USER_ERROR);
             }
-            echo "<table id='tablePreview' class='table table-striped table-hover table-borderless'>";
+            echo "<table id='tablePreview' class='table table-striped table-hover table-borderless' >";
             echo "<thead>";
             $ncols = oci_num_fields($s);
             echo "<tr>\n";

@@ -30,19 +30,19 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
+                    <a class="nav-link" href="about.php">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tops</a>
+                    <a class="nav-link" href="top.php">Tops</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="genres.html">Genres</a>
+                    <a class="nav-link" href="genres.php">Genres</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Artists</a>
+                    <a class="nav-link" href="artists.php">Artists</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Profile</a>
+                    <a class="nav-link" href="profile.php">Profile</a>
                 </li>
             </ul>
         </div>

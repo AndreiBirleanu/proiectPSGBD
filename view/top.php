@@ -7,7 +7,9 @@ $username = "C##PROIECT";                  // Use your username
 $password = "PROIECT";             // and your password
 $database = "localhost:1522/XE";   // and the connect string to connect to your database
  
-
+ if(isset($_GET['song'])){
+     echo "console.log(' " . $_GET['song'] . "')";
+ }
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +67,7 @@ $database = "localhost:1522/XE";   // and the connect string to connect to your 
     </div>
 </header>
 <?php
-$query = "SELECT nume,descriere,voturi FROM songs order by voturi desc ";
+$query = "SELECT nume as nume,descriere,voturi FROM songs order by voturi desc ";
  
 $c = oci_connect($username, $password, $database);
 if (!$c) {
@@ -99,127 +101,28 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
     $i=$i+1;
     echo "<tr>\n";
     echo "<th scope='row'>" . $i . "</th>";
+    $cont=0;
+    $piesa="";
     foreach ($row as $item) {
+        $cont=$cont+1;
+        if($cont ==1){
+            $piesa=$item!==null?htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
+        }
+
         echo "<td>";
+        
         echo $item!==null?htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
         echo "</td>\n";
     }
-    echo    "<td><button class='btn btn-black'>Upvote</button></td>";
+    
+    echo    "<td><form method='post' action='top.php?song=". $piesa ."'><button class='btn btn-black' >Upvote</button></form></td>";
 
     echo "</tr>\n";
 }
 echo "</table>\n";
 ?>
 
-<!--Table-->
-<!--
-<table id="tablePreview" class="table table-striped table-hover table-borderless">
-    
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Title</th>
-        <th>Artists</th>
-        <th>Genres</th>
-        <th>Votes</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <th scope="row">1</th>
-        <td>I Mean It</td>
-        <td>G-Eazy, Remo</td>
-        <td>Rap</td>
-        <td>123456</td>
-        <td><button class="btn btn-black">Upvote</button></td>
 
-    </tr>
-    <tr>
-        <th scope="row">2</th>
-        <td>I Do</td>
-        <td>Cardi B</td>
-        <td>Rap</td>
-        <td>10973</td>
-        <td>
-            <button class="btn btn-black">Upvote</button>
-        </td>
-
-    <tr>
-        <th scope="row">3</th>
-        <td>Jenny of Oldstones</td>
-        <td>Florence + The Machine</td>
-        <td>Folk</td>
-        <td>967</td>
-        <td>
-            <button class="btn btn-black">Upvote</button>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">4</th>
-        <td>3005</td>
-        <td>Childish Gambino</td>
-        <td>Hip-Hop, Rap</td>
-        <td>690</td>
-        <td><button class="btn btn-black">Upvote</button></td>
-
-    </tr>
-    <tr>
-        <th scope="row">5</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-        <td>Mark</td>
-        <td><button class="btn btn-black">Upvote</button></td>
-
-    </tr>
-    <tr>
-        <th scope="row">6</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-        <td>Mark</td>
-        <td><button class="btn btn-black">Upvote</button></td>
-    </tr>
-    <tr>
-        <th scope="row">7</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-        <td>Mark</td>
-        <td><button class="btn btn-black">Upvote</button></td>
-
-    </tr>
-    <tr>
-        <th scope="row">8</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-        <td>Mark</td>
-        <td><button class="btn btn-black">Upvote</button></td>
-
-    </tr>
-    <tr>
-        <th scope="row">9</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-        <td>Mark</td>
-        <td><button class="btn btn-black">Upvote</button></td>
-
-    </tr>
-    <tr>
-        <th scope="row">10</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-        <td>Mark</td>
-        <td><button class="btn btn-black">Upvote</button></td>
-
-    </tr>
-    </tbody>
-    </table>
-Table-->
 
 </div>
 
