@@ -32,10 +32,11 @@ CREATE OR REPLACE PACKAGE BODY crypto AS
 END crypto; 
 
 CREATE OR REPLACE PACKAGE BODY user_registration AS 
-    FUNCTION login(c_username useri.username%TYPE, c_password useri.username%TYPE) return number
+    FUNCTION login(c_username useri.username%TYPE, c_password useri.username%TYPE) return int
     IS
     match_count number;
     encrypted_pass raw(100);
+    v_id int;
     begin
     select crypto.crypting_pass(c_password) into encrypted_pass from dual;
     select count(*)
@@ -46,7 +47,8 @@ CREATE OR REPLACE PACKAGE BODY user_registration AS
   if match_count = 0 then
     return 0;
   elsif match_count = 1 then
-    return 1;
+  select useri_id into v_id from useri where username like c_username;
+    return v_id;
   else
     return -1;
   end if;
@@ -75,20 +77,31 @@ END user_registration;
 
 
 CREATE OR REPLACE PACKAGE BODY vote AS 
-    FUNCTION vote_song(v_piesa varchar2, v_user varchar2) return number
+    PROCEDURE vote_song(v_piesa int, v_user int, v_message OUT varchar2) 
     IS
     v_canVote number;
     v_sql varchar2(255);
+    v_count number;
     begin
-    select ebanat into v_canVote from useri where username like v_user;
-  if v_canVote = 0 then
-    return 0;
+    select ebanat into v_canVote from useri where useri_id = v_user;
+  if v_canVote = 1 then
+    v_message:=v_message ||'user banat';
+    return;
   end if;
-  v_sql:='UPDATE songs SET voturi=voturi+1 where nume like "' || v_piesa || '"';
+    select count(*) into v_count from votes where songs_fk = v_piesa and useri_fk=v_user;
+  if v_count > 0 then
+    v_message:='poti vota doar o singura data';
+    return;
+    end if;
+    
+  v_sql:='UPDATE songs SET voturi=voturi+1 where songs_id = ' || v_piesa ;
+  insert into votes values (v_piesa, v_user);
+ -- DBMS_OUTPUT.PUT_LINE(v_sql);
   execute IMMEDIATE v_sql;
+  v_message:=v_message||'piesa votata';
 end vote_song;
 
-FUNCTION BAN(v_user varchar2) return number
+PROCEDURE BAN(v_user varchar2, v_message OUT varchar2)
 is
 v_sql varchar2(255);
 v_canVote number;
@@ -96,12 +109,13 @@ begin
 
 select ebanat into v_canVote from useri where username like v_user;
   if v_canVote = 1 then
-    return 0;
+    v_message:=v_message||'user deja banat';
+    return;
   end if;
   
    v_sql:='UPDATE useri SET ebanat=1 where nume like "' || v_user || '"';
   execute IMMEDIATE v_sql;
-  return 1;
+  v_message:=v_message||'user banat';
 
 
 end ban;
@@ -110,29 +124,12 @@ END vote;
 
 
 
-CREATE OR REPLACE PACKAGE BODY addSong AS
-    FUNCTION addArtist(v_nume IN varchar2, v_artist IN varchar2)return NUMBER
-    is
-    idSong NUMBER;
-    v_sql VARCHAR2(255);
-    idArtist NUMBER;
-    v_count number;
-    BEGIN
-        select count(*) into v_count from artists where nume_scena like v_nume;
-        if(v_count >0) then
-          Select songs_id into idSong from Songs where nume like v_nume;
-        SELECT artists_id INTO idArtist from artists  where nume_scena like v_artist;
-        v_sql:='INSERT INTO PROXYSONGARTIST(artists_fk, songs_fk, created_at, updated_at) VALUES (' || idartist || ', ' || idsong ||', sysdate, sysdate)';
-        EXECUTE IMMEDIATE v_sql;  
-        else    
-        INSERT INTO ARTISTS values(ART_SEQ.nextval,v_artist,sysdate,sysdate);
-        Select songs.songs_id into idSong from Songs where nume like v_nume;
-        SELECT artists_id INTO idArtist from artists  where nume_scena like v_artist;
-        v_sql:='INSERT INTO PROXYSONGARTIST(artists_fk, songs_fk, created_at, updated_at) VALUES (' || idartist || ', ' || idsong ||', sysdate, sysdate)';
-        EXECUTE IMMEDIATE v_sql;  
-       
-        end if;
-        return 1;
-        
-    end addArtist;    
-    END addSong;
+commit;
+
+select user_registration.login('jerry','parola') from dual;
+
+
+select * from votes;
+
+ select * from asdfg;
+

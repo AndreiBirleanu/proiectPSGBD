@@ -7,6 +7,7 @@ DROP TABLE genres;
 DROP TABLE artists;
 drop table comments;
 DROP TABLE useri;
+DROP TABLE votes;
 DROP SEQUENCE usr_seq;
 DROP SEQUENCE songs_seq;
 DROP SEQUENCE art_seq;
@@ -18,7 +19,7 @@ DROP SEQUENCE proxys_g;
 
 --construim tablele
 CREATE TABLE useri (
-  useri_Id INT NOT NULL,
+  useri_Id INT ,
   username VARCHAR2(30) NOT NULL,
   pass RAW(100) NOT NULL,
   eAdmin INT DEFAULT 0,
@@ -29,7 +30,7 @@ CREATE TABLE useri (
 );
 CREATE SEQUENCE usr_seq START WITH 1;
 CREATE TABLE songs (
-  songs_Id INT NOT NULL,
+  songs_Id INT ,
   nume VARCHAR2(255),
   descriere VARCHAR2(512),
   link_youtube VARCHAR2(512),
@@ -43,7 +44,7 @@ CREATE TABLE songs (
 CREATE SEQUENCE songs_seq START WITH 1;
 
 CREATE TABLE artists (
-  artists_Id INT NOT NULL,
+  artists_Id INT ,
   nume_scena VARCHAR2(30) NOT NULL,
   created_at DATE,
   updated_at DATE,
@@ -51,7 +52,7 @@ CREATE TABLE artists (
 );
 CREATE SEQUENCE art_seq START WITH 1;
 CREATE TABLE genres (
-  genres_Id INT NOT NULL,
+  genres_Id INT ,
   nume VARCHAR2(512) NOT NULL,
   created_at DATE,
   updated_at DATE,
@@ -59,7 +60,7 @@ CREATE TABLE genres (
 );
 CREATE SEQUENCE gen_seq START WITH 1;
 CREATE TABLE comments (
-  comments_Id INT NOT NULL,
+  comments_Id INT ,
   text VARCHAR2(512),
   users_fk INT NOT NULL,
   created_at DATE,
@@ -94,6 +95,14 @@ CREATE TABLE ProxySongComment (
   updated_at DATE,
   CONSTRAINT proxysongcomment_comment_fk FOREIGN KEY (comments_fk) REFERENCES comments (comments_Id),
   CONSTRAINT proxysongcomment_song_fk FOREIGN KEY (songs_fk) REFERENCES songs (songs_Id)
+);
+
+CREATE TABLE votes(
+    songs_fk INT NOT NULL,
+    useri_fk INT NOT NULL,
+    CONSTRAINT votes_songs_fk FOREIGN KEY (songs_fk) REFERENCES songs (songs_id),
+    CONSTRAINT votes_useri_fk FOREIGN KEY (useri_fk) REFERENCES useri (useri_Id)
+
 );
 CREATE SEQUENCE proxys_c START WITH 1;
 
@@ -341,4 +350,4 @@ FOR v_i in 1..4000 loop
 end loop;
 end;
 
-commit;
+

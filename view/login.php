@@ -19,12 +19,15 @@ if (!$r) {
 }
  
 $row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS);
-if($row['RESPONSE'] !=1){
+echo $row['RESPONSE'];
+if($row['RESPONSE'] <1){
     $error=1;
 }else{
     session_start();
     $_SESSION['username'] = $_POST['username'];
-    header("Location: homepage.html");
+    
+    $_SESSION['username_id'] = $row['RESPONSE'];
+    header("Location: top.php");
     die();
 
 }

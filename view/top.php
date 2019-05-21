@@ -1,15 +1,15 @@
 <?php
- 
+ require_once("db/dbconn.php");
+ require_once("controller/vote.php");
+ require_once("controller/pagination.php");
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
  
 $username = "C##PROIECT";                  // Use your username
 $password = "PROIECT";             // and your password
 $database = "localhost:1522/XE";   // and the connect string to connect to your database
- 
- if(isset($_GET['song'])){
-     echo "console.log(' " . $_GET['song'] . "')";
- }
+$current_url = $_SERVER['PHP_SELF'];
+
 ?>
 
 <!DOCTYPE html>
@@ -66,14 +66,20 @@ $database = "localhost:1522/XE";   // and the connect string to connect to your 
         <a href="#" class="btn btn-black">See last week's top 10!</a>
     </div>
 </header>
+<a href="top.php">TOP 10</a>  
+  <a href="top.php?page=2">TOP 20</a>
+  <a href="top.php?page=3">TOP 30</a>
+  <a href="top.php?page=5">TOP 50</a>
+  <a href="top.php?page=10">TOP 100</a>
+  <a href="top.php?page=20">TOP 200</a>
+  <a href="top.php?page=100">TOP 1000</a>  
 <?php
-$query = "SELECT nume as nume,descriere,voturi FROM songs order by voturi desc ";
- 
-$c = oci_connect($username, $password, $database);
-if (!$c) {
-    $m = oci_error();
-    trigger_error('Could not connect to database: '. $m['message'], E_USER_ERROR);
+if(isset($_GET['action']) && $_GET['action'] == 'voteDennied'){
+    echo "<h3>Acces restrictionat la votare</h3>";
 }
+$query = "SELECT songs_id,nume as nume,descriere,link_youtube,voturi FROM view_2  ";
+ 
+
  
 $s = oci_parse($c, $query);
 if (!$s) {
@@ -90,7 +96,7 @@ if (!$r) {
 $ncols = oci_num_fields($s);
 echo "<tr>\n";
 echo "<th> # </th>";
-for ($i = 1; $i <= $ncols; ++$i) {
+for ($i = 2; $i <= $ncols; ++$i) {
     $colname = oci_field_name($s, $i);
     echo "<th>".htmlspecialchars($colname,ENT_QUOTES|ENT_SUBSTITUTE)."</th>\n";
 }
@@ -104,15 +110,17 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
     $cont=0;
     $piesa="";
     foreach ($row as $item) {
-        $cont=$cont+1;
-        if($cont ==1){
+        
+        if($cont ==0){
             $piesa=$item!==null?htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
-        }
-
+            $cont=$cont+1;
+        }else{
+        $cont=$cont+1;
         echo "<td>";
         
         echo $item!==null?htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
         echo "</td>\n";
+        }
     }
     
     echo    "<td><form method='post' action='top.php?song=". $piesa ."'><button class='btn btn-black' >Upvote</button></form></td>";
@@ -120,10 +128,20 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
     echo "</tr>\n";
 }
 echo "</table>\n";
+
+
+
 ?>
 
-
-
+  
+  <a href="top.php">TOP 10</a>  
+  <a href="top.php?page=2">TOP 20</a>
+  <a href="top.php?page=3">TOP 30</a>
+  <a href="top.php?page=5">TOP 50</a>
+  <a href="top.php?page=10">TOP 100</a>
+  <a href="top.php?page=20">TOP 200</a>
+  <a href="top.php?page=100">TOP 1000</a> 
+  
 </div>
 
 <footer class="container-fluid text-center">
