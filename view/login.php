@@ -1,9 +1,9 @@
 
 <?php
-
+require_once("db/dbconn.php");
 $error=0;
 if(isset($_GET['action']) && $_GET['action']== 'login'){
-require_once("db/dbconn.php");
+
 $query = "select USER_REGISTRATION.LOGIN(:usern,:pass) as response from dual";
 $s = oci_parse($c, $query);
 if (!$s) {
@@ -23,14 +23,47 @@ echo $row['RESPONSE'];
 if($row['RESPONSE'] <1){
     $error=1;
 }else{
-    session_start();
-    $_SESSION['username'] = $_POST['username'];
     
+    $_SESSION['username'] = $_POST['username'];
     $_SESSION['username_id'] = $row['RESPONSE'];
-    header("Location: top.php");
+    header("Location: homepage.php");
     die();
 
 }
+}
+
+if(isset($_GET['action']) && $_GET['action']=='register') {
+    $v_mesaj = "";
+    
+    $queryRegister = "DECLARE v_mesaj VARCHAR(255);
+                     BEGIN 
+                     USER_REGISTRATION.REGISTER_USER(:username, :password, 0, :message);
+                     dbms_output.put_line(v_mesaj);
+                     END;";
+    $t = oci_parse($c, $queryRegister);
+    if (!$t) {
+        $m = oci_error($t);
+        trigger_error('Could not parse statement: ' . $m['message'], E_USER_ERROR);
+    }
+    oci_bind_by_name($t, ':username', $_POST['username'], 32);
+    oci_bind_by_name($t, ':password', $_POST['password'], 32);
+    oci_bind_by_name($t, ':message', $v_mesaj, 32);
+    $e = oci_execute($t);
+    if (!$e) {
+        $m = oci_error($t);
+        trigger_error('Could not execute statement: ' . $m['message'], E_USER_ERROR);
+    }
+    if ($v_mesaj == "Username deja existent" ){
+        $error = 2;
+    }
+    else if($v_mesaj == "Parola pea mica sau prea mare" ){
+        $error = 3;
+    }
+    else if ($v_mesaj == "User inregistrat"){
+            
+            header("Location: login.php");
+            die();
+    }
 }
 
 
@@ -60,9 +93,13 @@ if($row['RESPONSE'] <1){
 <div class="main">
     <div class="col-md-6 col-sm-12">
         <div class="login-form">
-            <form id = "loginForm" method="post" action = "login.php?action=login" >
-             <?php if ($error ==1 )
-             echo "<p>Username sau parola gresita</p>";
+            <form id = "loginForm"  >
+            <?php if ($error ==1 )
+                echo "<p>Wrong username or password</p>";
+             else if ($error == 2)
+                echo "<p>This username already exists.</p>";
+             else if ($error == 3)
+                 echo "<p>The password is either too short or too long.</p>";
              ?>   
               
                 <div class="form-group">
@@ -73,8 +110,8 @@ if($row['RESPONSE'] <1){
                     <label>Password</label>
                     <input type="password" class="form-control" id= "password" name = "password" placeholder="Password">
                 </div>
-                <button type="submit" class="btn btn-black" id="login">Login</button>
-                <button type="submit" class="btn btn-secondary">Register</button>
+                <button type="submit" class="btn btn-black" id="login" formaction="login.php?action=login" formmethod="post">Login</button>
+                <button type="submit" class="btn btn-secondary" formaction="login.php?action=register" formmethod="post">Register</button>
                 
             </form>
             

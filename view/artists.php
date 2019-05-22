@@ -75,7 +75,7 @@ include 'controller/nav.php';
 
   <?php
     //$query = "select * from(select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where REGEXP_LIKE(g.nume, '[^A-Za-z]')  group by g.nume order by sum(voturi) desc ) where rownum <10";
-    $query = "select * from top_genre_view";
+    $query = "select * from top_artists_view";
    
     $s = oci_parse($c, $query);
     if (!$s) {
@@ -109,8 +109,8 @@ include 'controller/nav.php';
   <button class="tablinks" onclick="openCity(event, 'Tokyo')">Dance</button> -->
 </div>
 <?php 
-//$query = "select * from(select g.nume FROM genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where REGEXP_LIKE(g.nume, '[^A-Za-z]')  group by g.nume order by sum(voturi) desc ) where rownum <10";
-$query = "select * from top_genre_view";
+//$query = "select * from(select a.nume_scena FROM artists a inner join proxysongartist psa on a.artists_id = psa.artists_id inner join songs s on s.songs_id= psa.songs_fk where REGEXP_LIKE(g.nume, '[^A-Za-z]')  group by g.nume order by sum(voturi) desc ) where rownum <10";
+$query = "select * from top_artists_view";
    
    
 $s = oci_parse($c, $query);
@@ -133,7 +133,7 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
        echo "<script> console.log('" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) . "');</script>";
         
        echo "<div id ='" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) . "' class = 'tabcontent'>\n";
-       $query2 = "SELECT s.nume,s.descriere,s.link_youtube,s.voturi FROM  genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk where g.nume like '" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .  "' order by voturi desc ";
+       $query2 = "SELECT s.nume,s.descriere,s.link_youtube,s.voturi FROM  artists a inner join proxysongartist psa on a.artists_id = psa.artists_fk inner join songs s on s.songs_id= psa.songs_fk where a.nume_scena like '" . htmlspecialchars($item, ENT_QUOTES|ENT_SUBSTITUTE) .  "' order by voturi desc ";
         
        $x = oci_parse($c, $query2);
        if (!$x) {
@@ -170,13 +170,23 @@ while (($row = oci_fetch_array($s, OCI_ASSOC+OCI_RETURN_NULLS)) != false) {
                     echo "'>";
                     echo $item1!==null?htmlspecialchars($item1, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
                     echo "</a>";
-                    //echo "<a href='https://www.google.com/'>x</a>";
+                    
                     echo "</td>\n";
                     }else{
+                        if($count==1){
+                            echo "<td><a href='about.php?name=";
+                    echo $item1!==null?htmlspecialchars($item1, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
+                    echo "'style='color:lightgray;text-decoration:none;'>";
+                    echo $item1!==null?htmlspecialchars($item1, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
+                    echo "</a>";
+                    
+                    echo "</td>\n";
+                        }else{
                     echo "<td>";
                     echo $item1!==null?htmlspecialchars($item1, ENT_QUOTES|ENT_SUBSTITUTE):"&nbsp;";
                     echo "</td>\n";
                 }
+            }
                 }
                 echo    "<td><button class='btn btn-black'>Upvote</button></td>";
 

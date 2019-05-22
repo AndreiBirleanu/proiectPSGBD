@@ -16,7 +16,8 @@ END top;
 
 CREATE OR REPLACE PACKAGE create_view as
 PROCEDURE top_genres;
-FUNCTION top_by_name( v_name varchar2) return SYS_REFCURSOR;
+--FUNCTION top_by_name( v_name varchar2) return SYS_REFCURSOR;
+PROCEDURE top_artists;
 
 END create_view;
 
@@ -27,9 +28,23 @@ PROCEDURE BAN(v_user varchar2,v_message OUT varchar2) ;
 END vote;
 
 CREATE OR REPLACE PACKAGE song as
-TYPE vay IS ARRAY(20) OF varchar2(250);
-PROCEDURE addSong(v_user IN number, v_titlu IN varchar2, v_descriere IN varchar2, v_link IN varchar2, artistArray IN vay, genresArray IN vay, message OUT varchar2);
+
+PROCEDURE addSong(v_user IN number, v_titlu IN varchar2, v_descriere IN varchar2, v_link IN varchar2, artistArray IN varchar2, genresArray IN varchar2, message OUT varchar2);
 PROCEDURE addArtist(v_nume IN varchar2, v_artist IN varchar2);
 PROCEDURE addGenre(v_nume IN varchar2, v_genre IN varchar2);
 END song;
+
+
+
+select regexp_substr('QUEEN,ALLEN,WARD,JONES a,FREDDIE','[^,]+', 1, level) as s from dual
+    connect by regexp_substr('SMITH,ALLEN,WARD,JONES, FREDDIE', '[^,]+', 1, level) is not null;
+    
+    
+    declare
+    mesaj varchar2(255);
+    begin
+    vote.vote_song(3015,1004,mesaj);
+    DBMS_OUTPUT.PUT_LINE(mesaj);
+    end;
+
 

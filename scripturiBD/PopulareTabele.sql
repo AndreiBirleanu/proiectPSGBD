@@ -149,7 +149,7 @@ DECLARE
 DBMS_OUTPUT.PUT_LINE('am terminat de construit tabelele');
 
 DBMS_OUTPUT.PUT_LINE('populam tabela useri cu 1.000.000 entitati ...');
-   FOR v_i IN 1..100 LOOP
+   FOR v_i IN 1..1000 LOOP
       v_nume := lista_nume(TRUNC(DBMS_RANDOM.VALUE(0,lista_nume.count))+1);
       IF (DBMS_RANDOM.VALUE(0,100)<50) THEN      
          v_prenume1 := lista_prenume_fete(TRUNC(DBMS_RANDOM.VALUE(0,lista_prenume_fete.count))+1);
@@ -209,7 +209,7 @@ DBMS_OUTPUT.PUT_LINE('am terminat de populat useri!');
 DBMS_OUTPUT.PUT_LINE('populam tabela artists cu 10.000 entitati...');
    
    --inseram 1000 de artisti 
-   FOR v_i IN 1..20 LOOP
+   FOR v_i IN 1..200 LOOP
       v_nume := lista_nume(TRUNC(DBMS_RANDOM.VALUE(0,lista_nume.count))+1);
       IF (DBMS_RANDOM.VALUE(0,100)<50) THEN      
          v_prenume1 := lista_prenume_fete(TRUNC(DBMS_RANDOM.VALUE(0,lista_prenume_fete.count))+1);
@@ -266,7 +266,7 @@ DBMS_OUTPUT.PUT_LINE('populam tabela genuri...');
    select count(*) into v_tmp2 from artists;
    select count(*) into v_tmp5 from genres;
    
-    FOR v_i IN 1..2000 LOOP
+    FOR v_i IN 1..3000 LOOP
       v_length := FLOOR(DBMS_RANDOM.VALUE(1,3));
       my_str :=null;
       FOR v_ii IN 1..v_length LOOP
@@ -350,4 +350,7 @@ FOR v_i in 1..4000 loop
 end loop;
 end;
 
-
+commit;
+SELECT * FROM VIEW_2;
+SELECT a.nume_scena  FROM view_2 v inner join proxysongartist on v.songs_id=psa.songs_fk inner join artists a on a.artists_id  = psa.artists_fk  where v.songs_id= 2;
+select * from view_2 v inner join proxysongartist psa on v.songs_id = psa.songs_fk inner join artists a on a.artists_id  = psa.artists_fk  ;

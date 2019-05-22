@@ -1,10 +1,9 @@
 <?php
 if(isset($_GET['song'])){
-    // echo "console.log(' " . $_GET['song'] . "')";
+    
     $song=$_GET['song'];
     $username=$_SESSION['username_id'];
-   // echo $username;
-    //$username='jerry';
+    
     $mesaj;
     $query ="begin
     vote.vote_song(:piesa,:username,:v_message);

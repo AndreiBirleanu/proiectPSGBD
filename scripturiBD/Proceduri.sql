@@ -26,24 +26,19 @@ BEGIN
   group by g.nume order by sum(voturi) desc ) where rownum <10';
   execute IMMEDIATE v_sql;
 END top_genres;
+PROCEDURE top_artists 
+IS
+BEGIN
 
 
-FUNCTION top_by_name( v_name varchar2) return SYS_REFCURSOR
-
-AS
-my_cursor SYS_REFCURSOR;
-begin
-
-OPEN my_cursor FOR  SELECT s.nume,s.descriere,s.voturi 
-FROM  genres g inner join proxysonggenre psg on g.genres_id = psg.genres_fk inner join songs s on s.songs_id= psg.songs_fk 
-where g.nume like v_name order by voturi desc ;
-
- RETURN my_cursor;
-    
+  v_sql:= 'CREATE or REPLACE VIEW top_artists_view AS
+  select * from
+  (select a.nume_scena FROM artists a inner join proxysongartist psa on a.artists_id = psa.artists_fk inner join songs s on s.songs_id= psa.songs_fk   
+  group by a.nume_scena order by sum(voturi) desc ) where rownum <10';
+  execute IMMEDIATE v_sql;
+END top_artists;
 
 
-
-end top_by_name;
 end create_view;
 
 
@@ -99,10 +94,16 @@ CREATE OR REPLACE PACKAGE BODY song AS
         
         
     end addGenre;
-    PROCEDURE addSong(v_user IN number,v_titlu IN varchar2, v_descriere IN varchar2, v_link IN varchar2, artistArray IN vay, genresArray IN vay, message OUT varchar2)
+    PROCEDURE addSong(v_user IN number,v_titlu IN varchar2, v_descriere IN varchar2, v_link IN varchar2, artistArray IN VARCHAR2, genresArray IN varchar2, message OUT varchar2)
    is
    v_count number;
    v_sql VARCHAR2(255);
+   cursor c1 is
+   select regexp_substr(artistArray,'[^,]+', 1, level) as a  from dual
+    connect by regexp_substr(artistArray, '[^,]+', 1, level) is not null;
+    cursor c2 is
+    select regexp_substr(genresArray,'[^,]+', 1, level) as a  from dual
+    connect by regexp_substr(genresArray, '[^,]+', 1, level) is not null;
    begin
         select count(*) into v_count from songs where nume like v_titlu;
         if v_count > 0 then
@@ -113,17 +114,28 @@ CREATE OR REPLACE PACKAGE BODY song AS
         message:='Linkul nu este unul catre youtube';
         return;
         end if;
-        INSERT INTO SONGS(nume,descriere,link_youtube,voturi,useri_fk,created_at,updated_at) values (v_titlu,v_descriere,v_link,0,v_user,sysdate,sysdate);
-        
-        FOR i IN 1..artistarray.count LOOP
-            addArtist(v_titlu,artistarray(i));
-          END LOOP;
-          FOR i IN 1..genresarray.count LOOP
-            addGenre(v_titlu,genresarray(i));
-          END LOOP;
+        INSERT INTO SONGS(songs_id,nume,descriere,link_youtube,voturi,useri_fk,created_at,updated_at) values (SONGS_SEQ.nextval,v_titlu,v_descriere,v_link,0,v_user,sysdate,sysdate);
+       
+        FOR v_c1 in c1
+        LOOP
+        addArtist(v_titlu,v_c1.A);
+        end loop;
+        FOR v_c2 in c2
+        LOOP
+        addGenre(v_titlu,v_c2.A);
+        end loop;
     message:='piesa adaugata cu succes';
    end addSong;
    
 
     
 END song;
+
+select * from genres order by genres_id desc;
+select * from useri order by useri_id desc;
+select * from songs order by songs_id desc;
+select * from votes;
+
+begin
+create_view.top_artists;
+end;
